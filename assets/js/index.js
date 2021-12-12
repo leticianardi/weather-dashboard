@@ -14,7 +14,7 @@ dayjs.extend(window.dayjs_plugin_utc);
 dayjs.extend(window.dayjs_plugin_timezone);
 
 // display search history
-function displayHistory() {
+function displaySearchHistory() {
  historyContainer.innerHTML = '';
 
  // Start at end of history array and count down to show the most recent at the top.
@@ -29,16 +29,30 @@ function displayHistory() {
    btn.textContent = searchHistory[i];
    searchHistoryContainer.append(btn);
  }
-
 }
 
-function handleFormSubmit(e){
-e.preventDefault();
+// update search history
+function addToHistory (search) {
+ if (searchHistory.indexOf(search) !== -1) {
+  return;
+ }
+ searchHistory.push(search);
 
-var search = userInput.value;
+ localStorage.setItem('search-history', JSON.stringify(searchHistory));
 
-fetchCoordinates(search);
+ displaySearchHistory();
 }
+
+// get search history from local storage
+function initSearchHistory() {
+ var storedHistory = localStorage.getItem('search-history');
+ if (storedHistory) {
+   searchHistory = JSON.parse(storedHistory);
+ }
+ displaySearchHistory();
+}
+
+
 
 
 function fetchCoordinates(city){
@@ -73,12 +87,25 @@ function currentWeather(current, city, timezone){
  var wind = current.wind_speed;
  var icon = current.weather[0].icon;
 
- //create the elements that you want to display on the page
- //make sure to add any attributes that they need
- //make sure to add any content that needs to show on the page
- //make sure to append the elements to any containers they need to be in. 
 }
-// set local storage
+
+// search form
+function handleFormSubmit(e){
+ // Don't continue if there is nothing in the search form
+ if (!searchInput.value) {
+  return;
+ }
+
+ e.preventDefault();
+
+ var search = userInput.value;
+ fetchCoordinates(search);
+ searchInput.value = '';
+}
 
 
+
+initSearchHistory();
 searchForm.addEventListener('submit', handleFormSubmit);
+searchHistoryContainer.addEventListener('click', handleSearchHistoryClick);
+
