@@ -39,6 +39,10 @@ function oneCall(info) {
   console.log(data)
 }
 
+// display current date
+function displayDate() {
+  return moment().format('MMMM Do YYYY, HH:mm');
+}
 
 
 // // display the current weather
